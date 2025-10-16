@@ -3,7 +3,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-    . = 2M
+    . = 2M;
 
     .text BLOCK(4K) : ALIGN(4K)
     {
@@ -11,7 +11,7 @@ SECTIONS
         *(.text)            /* Code section after */
     }
 
-    .rodata BOCK(4K) : ALIGN(4K)
+    .rodata BLOCK(4K) : ALIGN(4K)
     {
         *(.rodata)
     }

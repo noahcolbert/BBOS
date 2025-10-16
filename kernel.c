@@ -68,13 +68,17 @@ void terminal_setcolor(uint8_t color){
 }
 
 void terminal_putentryat(char c, uint8_t color, size_t x, size_t y){
-    if (c == 10)        // \n is ASCII code 10
-        y++;            //super cheaty way of implementing newline
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = vga_entry(c, color);
 }
 
 void terminal_putchar(char c){
+    /* Handle newline */
+    if (c == '\n'){
+        terminal_row++;
+        terminal_column = 0;
+    }
+
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH){
         terminal_column = 0;
