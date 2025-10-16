@@ -1,0 +1,29 @@
+/* Bootloader starts execution at this symbol */
+ENTRY(_start)
+
+SECTIONS
+{
+    . = 2M
+
+    .text BLOCK(4K) : ALIGN(4K)
+    {
+        *(.multiboot)       /* Multiboot header first */
+        *(.text)            /* Code section after */
+    }
+
+    .rodata BOCK(4K) : ALIGN(4K)
+    {
+        *(.rodata)
+    }
+
+    .data BLOCK(4K) : ALIGN(4K)
+    {
+        *(.data)
+    }
+
+    .bss BLOCK(4K) : ALIGN(4K)
+    {
+        *(COMMON)
+        *(.bss)
+    }
+}
