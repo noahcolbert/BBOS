@@ -72,11 +72,44 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y){
     terminal_buffer[index] = vga_entry(c, color);
 }
 
+/* For internal usage in terminal scrolling, takes the formatted
+    VGA entries as stored in terminal_buffer as opposed to the
+    above which takes raw char and color args and formats them
+    before entry into the buffer.
+ */
+void terminal_putoldentryat(uint16_t entry, size_t x, size_t y){
+    const size_t index = y * VGA_WIDTH + x;
+    terminal_buffer[index] = entry;
+}
+
+void terminal_scroll(void){
+    terminal_column = 0;
+    terminal_row = 0;
+    for (size_t y = 0; y < VGA_HEIGHT; y++) {
+        for (size_t x = 1; x < VGA_WIDTH; x++){
+            const size_t index = y * VGA_WIDTH + x;
+            //terminal_buffer[index] = vga_entry(' ', terminal_color);
+            uint16_t prev_entry = terminal_buffer[index];
+            terminal_putoldentryat(prev_entry, terminal_column, terminal_row);
+            if (++terminal_column == VGA_WIDTH){
+                terminal_column = 0;
+                if (++terminal_row == VGA_HEIGHT)
+                    terminal_row = 0;
+            }
+        }
+    }
+}
+
 void terminal_putchar(char c){
     /* Handle newline */
     if (c == '\n'){
-        terminal_row++;
-        terminal_column = 0;
+        if (terminal_row + 1 == VGA_HEIGHT) {
+            terminal_column = 0;
+            terminal_scroll();
+        } else {
+            terminal_row++;
+            terminal_column = 0;
+        }
     }
 
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
@@ -98,5 +131,8 @@ void terminal_writestring(const char* data){
 
 void kernel_main(void){
     terminal_initialize();
-    terminal_writestring("Hello world!\n");
+    for (int i = 0; i < 25; i++) {
+        terminal_writestring("Wuss poppin jit \n");
+    }
+    terminal_writestring("okay and this out da bounds \n");
 }
