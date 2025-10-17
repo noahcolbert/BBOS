@@ -85,15 +85,15 @@ void terminal_putoldentryat(uint16_t entry, size_t x, size_t y){
 void terminal_scroll(void){
     terminal_column = 0;
     terminal_row = 0;
-    for (size_t y = 0; y < VGA_HEIGHT; y++) {
-        for (size_t x = 1; x < VGA_WIDTH; x++){
+    for (size_t y = 1; y < VGA_HEIGHT - 1; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++){
             const size_t index = y * VGA_WIDTH + x;
             //terminal_buffer[index] = vga_entry(' ', terminal_color);
             uint16_t prev_entry = terminal_buffer[index];
             terminal_putoldentryat(prev_entry, terminal_column, terminal_row);
             if (++terminal_column == VGA_WIDTH){
                 terminal_column = 0;
-                if (++terminal_row == VGA_HEIGHT)
+                if (++terminal_row == VGA_HEIGHT - 1)
                     terminal_row = 0;
             }
         }
@@ -134,5 +134,6 @@ void kernel_main(void){
     for (int i = 0; i < 25; i++) {
         terminal_writestring("Wuss poppin jit \n");
     }
-    terminal_writestring("okay and this out da bounds \n");
+    for (int j = 0; j < 10; j++)
+        terminal_writestring("okay and this out da bounds \n");
 }
