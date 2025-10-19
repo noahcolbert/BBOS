@@ -72,7 +72,8 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y){
     terminal_buffer[index] = vga_entry(c, color);
 }
 
-/* For internal usage in terminal scrolling, takes the formatted
+/* 
+    For internal usage in terminal scrolling, takes the formatted
     VGA entries as stored in terminal_buffer as opposed to the
     above which takes raw char and color args and formats them
     before entry into the buffer.
@@ -93,7 +94,7 @@ void terminal_scroll(void){
             terminal_putoldentryat(prev_entry, terminal_column, terminal_row);
             if (++terminal_column == VGA_WIDTH){
                 terminal_column = 0;
-                if (++terminal_row == VGA_HEIGHT - 1)
+                if (++terminal_row == VGA_HEIGHT)
                     terminal_row = 0;
             }
         }
@@ -116,7 +117,7 @@ void terminal_putchar(char c){
     if (++terminal_column == VGA_WIDTH){
         terminal_column = 0;
         if (++terminal_row == VGA_HEIGHT)
-            terminal_row = 0;
+            terminal_scroll();
     }
 }
 
@@ -129,11 +130,57 @@ void terminal_writestring(const char* data){
     terminal_write(data, strlen(data));
 }
 
+/* Stole this from a class I took last year */
+void itoa(char *buf, int base, int d){
+    char *p = buf;
+    char *p1, *p2;
+    unsigned long ud = d;
+    int divisor = 10;
+
+    if (base == 'd' && d < 0) {
+        *p++ = '-';
+        buf++;
+        ud = -d;
+    }
+    else if (base == 'x') {
+        divisor = 16;
+    }
+
+    do {
+        int remainder = ud % divisor;
+        *p++ = (remainder < 10) 
+                    ? remainder + '0' 
+                    : remainder + 'a' - 10;
+    } while (ud /= divisor);
+
+    *p = '\0';
+
+    p1 = buf;
+    p2 = p - 1;
+    while (p1 < p2) {
+        char tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+        p1++;
+        p2--;
+    }
+}
+
+void test_terminal(void){
+    for (int i = 0; i < 30; i++){
+        char istr;
+        itoa(&istr, 10, i);
+        terminal_writestring(&istr);
+        terminal_writestring("\n");
+    }
+}
+
 void kernel_main(void){
     terminal_initialize();
-    for (int i = 0; i < 25; i++) {
-        terminal_writestring("Wuss poppin jit \n");
-    }
-    for (int j = 0; j < 10; j++)
-        terminal_writestring("okay and this out da bounds \n");
+    test_terminal();
+    //for (int i = 0; i < 25; i++) {
+    //    terminal_writestring("Wuss poppin jit \n");
+    //}
+    //for (int j = 0; j < 10; j++)
+    //    terminal_writestring("okay and this out da bounds \n");
 }
