@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <sys/sysinfo.h>
 
 /*  Incredibly primitive while I'm learning
     Lets see how much this changes lol */
