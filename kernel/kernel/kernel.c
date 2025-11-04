@@ -24,17 +24,21 @@ void kernel_main(void) {
 }
 
 
-void start(multiboot_info_t* mbd, unsigned int magic) {
+void kernel_start(multiboot_info_t* mbd, unsigned int magic) {
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
-		printf("invalid multiboot num");
-		abort();
+		printf("invalid multiboot num\n");
+		//abort();
+	} else {
+		printf("MAGIC ACCEPTED\n");
 	}
 
 
 	/* Check bit 6 to see if memmap valid */
 	if (!(mbd->flags >> 6 & 0x1)) {
-		printf("invalid memory map from GRUB");
-		abort();
+		printf("invalid memory map from GRUB\n");
+		//abort();
+	} else {
+		printf("MMAP VALID\n");
 	}
 
 	uint32_t i;
@@ -44,7 +48,7 @@ void start(multiboot_info_t* mbd, unsigned int magic) {
 
 		if (mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) {
 			// TODO: Add smth here idk
-			continue;
+			printf("amongus\n");
 		}
 	}
 
