@@ -51,6 +51,7 @@ void kernel_start(multiboot_info_t* mbd, unsigned int magic) {
 		if (mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) {
 			// TODO: Add smth here idk
 			//printf("amongus\n");
+			continue;
 		}
 	}
 
