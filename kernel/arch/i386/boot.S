@@ -30,15 +30,12 @@ _start:
 	popf
 
 	# Push Magic number and mmap addr to stack
-	pushl %ebx
 	pushl %eax
+	pushl %ebx
 
 	# Call the global constructors.
 	call _init	
 
-	# Pop magic and mmap into C arg registers
-	popl %esi
-	popl %edi
 
 	# Transfer control to the main kernel.
 	call kernel_start
