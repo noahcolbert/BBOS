@@ -42,7 +42,7 @@ int printf(const char* restrict format, ...) {
 		}
 
 		const char* format_begun_at = format++;
-
+		//TYPE CHAR
 		if (*format == 'c') {
 			format++;
 			char c = (char) va_arg(parameters, int /* char promotes to int */);
@@ -53,7 +53,7 @@ int printf(const char* restrict format, ...) {
 			if (!print(&c, sizeof(c)))
 				return -1;
 			written++;
-		} else if (*format == 's') {
+		} else if (*format == 's') {	//TYPE STR
 			format++;
 			const char* str = va_arg(parameters, const char*);
 			size_t len = strlen(str);
@@ -64,7 +64,7 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
-		} else if (*format == 'd') {
+		} else if (*format == 'd') {	//TYPE INT
 			format++;
 			char str;
 			itoa(va_arg(parameters, int), &str, 10);
@@ -75,11 +75,11 @@ int printf(const char* restrict format, ...) {
 			if (!print(&str, len))
 				return -1;
 			written += len;
-		} else if (*format == 'x') {
+		} else if (*format == 'x') {	//TYPE HEX
 			format++;
 			char str;
 			uint32_t val = va_arg(parameters, uint32_t);
-			itoa(val, &str, 16);
+			xitoa(val, &str, 16);
 			size_t len = strlen(&str);
 			if (maxrem < len) {
 				return -1;

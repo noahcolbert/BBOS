@@ -2,6 +2,7 @@
 #define _STDLIB_H 1
 
 #include <sys/cdefs.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,7 +10,8 @@ extern "C" {
 
 __attribute__((__noreturn__))
 void abort(void);
-char* itoa(int num, char* str, int base);
+char* itoa(int value, char* result, int base);
+char* xitoa(uint32_t value, char* result, int base);
 
 #ifdef __cplusplus
 }

@@ -1,61 +1,58 @@
-/*  Stole this from geeksforgeeks not ashamed idc 
-    Writing itoa is freshman year CS activities,
-    I wanted a robust solution. */
+	/**
+	 * C++ version 0.4 char* style "itoa":
+	 * Written by Lukás Chmela
+	 * Released under GPLv3.
 
-// C program to implement itoa()
-#include <stdbool.h>
-#include <stdio.h>
+	 */
+#include <stdint.h>
 
-// A utility function to reverse a string
-void reverse(char str[], int length)
-{
-    int start = 0;
-    int end = length - 1;
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        end--;
-        start++;
-    }
-}
-// Implementation of citoa()
-char* itoa(int num, char* str, int base)
-{
-    int i = 0;
-    bool isNegative = false;
+	char* itoa(int value, char* result, int base) {
+		// check that the base if valid
+		if (base < 2 || base > 36) { *result = '\0'; return result; }
 
-    /* Handle 0 explicitly, otherwise empty string is
-     * printed for 0 */
-    if (num == 0) {
-        str[i++] = '0';
-        str[i] = '\0';
-        return str;
-    }
+		char* ptr = result, *ptr1 = result, tmp_char;
+		int tmp_value;
 
-    // In standard itoa(), negative numbers are handled
-    // only with base 10. Otherwise numbers are
-    // considered unsigned.
-    if (num < 0 && base == 10) {
-        isNegative = true;
-        num = -num;
-    }
+		do {
+			tmp_value = value;
+			value /= base;
+			*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+		} while ( value );
 
-    // Process individual digits
-    while (num != 0) {
-        int rem = num % base;
-        str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-        num = num / base;
-    }
+		// Apply negative sign
+		if (tmp_value < 0) *ptr++ = '-';
+		*ptr-- = '\0';
+		while(ptr1 < ptr) {
+			tmp_char = *ptr;
+			*ptr--= *ptr1;
+			*ptr1++ = tmp_char;
+		}
+		return result;
+	}
 
-    // If number is negative, append '-'
-    if (isNegative)
-        str[i++] = '-';
 
-    str[i] = '\0'; // Append string terminator
+    //I made this, cheaty/hacky way to deal with unsigned integers in HEX conversion.
+    //TODO: Find a way to get rid of this shit later
+	char* xitoa(uint32_t value, char* result, int base) {
+		// check that the base if valid
+		if (base < 2 || base > 36) { *result = '\0'; return result; }
 
-    // Reverse the string
-    reverse(str, i);
+		char* ptr = result, *ptr1 = result, tmp_char;
+		uint32_t tmp_value;
 
-    return str;
-}
+		do {
+			tmp_value = value;
+			value /= base;
+			*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+		} while ( value );
+
+		// Apply negative sign
+		if (tmp_value < 0) *ptr++ = '-';
+		*ptr-- = '\0';
+		while(ptr1 < ptr) {
+			tmp_char = *ptr;
+			*ptr--= *ptr1;
+			*ptr1++ = tmp_char;
+		}
+		return result;
+	}
