@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 static bool print(const char* data, size_t length) {
 	const unsigned char* bytes = (const unsigned char*) data;
@@ -64,13 +66,25 @@ int printf(const char* restrict format, ...) {
 			written += len;
 		} else if (*format == 'd') {
 			format++;
-			char* str;
-			itoa(va_arg(parameters, int), str, 10);
-			size_t len = strlen(str);
+			char str;
+			itoa(va_arg(parameters, int), &str, 10);
+			size_t len = strlen(&str);
 			if (maxrem < len) {
 				return -1;
 			}
-			if (!print(str, len))
+			if (!print(&str, len))
+				return -1;
+			written += len;
+		} else if (*format == 'x') {
+			format++;
+			char str;
+			uint32_t val = va_arg(parameters, uint32_t);
+			itoa(val, &str, 16);
+			size_t len = strlen(&str);
+			if (maxrem < len) {
+				return -1;
+			}
+			if (!print(&str, len))
 				return -1;
 			written += len;
 		}
