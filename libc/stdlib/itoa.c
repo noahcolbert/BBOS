@@ -31,7 +31,7 @@
 	}
 
 
-    //I made this, cheaty/hacky way to deal with unsigned integers in HEX conversion.
+    /* I made this, cheaty/hacky way to deal with unsigned integers in HEX conversion. */
     //TODO: Find a way to get rid of this shit later
 	char* xitoa(uint32_t value, char* result, int base) {
 		// check that the base if valid
