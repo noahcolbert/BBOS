@@ -2,4 +2,4 @@
 set -e
 . ./iso.sh
 
-qemu-system-$(./target-triplet-to-arch.sh $HOST) -m 3M -cdrom bbos.iso
+qemu-system-$(./target-triplet-to-arch.sh $HOST) -m 4G -cdrom bbos.iso
