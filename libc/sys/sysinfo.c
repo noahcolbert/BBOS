@@ -1,7 +1,7 @@
 #include <sys/sysinfo.h>
 #include <sys/memmap.h>
 
-void parse_multiboot_info(void* multiboot_info, sysinfo_t* info) {
+/* void parse_multiboot_info(void* multiboot_info, sysinfo_t* info) {
     //tags header
     info->tags_header = *(multiboot_tags_header_t*)multiboot_info;
     //tag offset address
@@ -23,4 +23,4 @@ void parse_multiboot_info(void* multiboot_info, sysinfo_t* info) {
 
             
         }
-}
+} */

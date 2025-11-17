@@ -3,6 +3,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/multiboot.h>
+#include <sys/sysinfo.h>
+
+extern char end_kernel;
+extern char text_start;
+
+memory_map_t memory_map;
 
 void show_memmap(multiboot_info_t* mbd) {
     uint32_t i;
@@ -20,4 +26,12 @@ void show_memmap(multiboot_info_t* mbd) {
 			continue;
 		}
 	}
+}
+
+memmap_entry_t create_mmap_entry(uint32_t start, uint32_t size, uint32_t flags) {
+    memmap_entry_t entry;
+    entry.start = start;
+    entry.size = size;
+    entry.flags = flags;
+    return entry;
 }
