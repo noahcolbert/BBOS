@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/multiboot.h>
 #include <sys/sysinfo.h>
+#include <sys/memmap.h>
 
 extern char end_kernel;
 extern char text_start;
