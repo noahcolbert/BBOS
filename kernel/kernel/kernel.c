@@ -15,7 +15,9 @@ uint32_t page_directory[1024] __attribute__((aligned(4096)));
 uint32_t first_page_table[1024] __attribute__((aligned(4096)));
 
 // TODO: Add logic for page framing
-	//I gotta fo a lot of memmap stuff first my b
+	//I gotta fo a lot of memmap stuff first my b | I DID THIS
+	//I gotta move to da higher half now
+
 
 void populate_pagetable(void) {
 	// holds the physical address where we want to start mapping these pages to.
@@ -84,7 +86,7 @@ void kernel_start(multiboot_info_t* mbd, unsigned int magic) {
 	}
 
 	show_memmap(mbd);
-	init_pageframe();
+	//init_pageframe();
 	kernel_main();
 }
 
