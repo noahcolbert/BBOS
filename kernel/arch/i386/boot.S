@@ -65,7 +65,7 @@ _start:
 	# Map VGA video memory to 0xC03FF000 as "present, writable"
 	movl $(0x000B8000 | 0x003), boot_page_table1 - 0xC0000000 + 1023 * 4
 
-	# Page table is used at both page dir entry 0 (virtual 0x0 t0 0x3FFFFF, thus identity mapped to kernel)
+	# Page table is used at both page dir entry 0 (virtual 0x0 to 0x3FFFFF, thus identity mapped to kernel)
 	#and page dir entry 768 (virtual 0xC0000000 to 0xC03FFFFF thus mapped to higher half)
 	# Kernel is identity mapped because enabling paging foes not change the next instruction
 	#which continues to be physical. The CPU would instead page fault if no identity mapping
@@ -120,4 +120,4 @@ _start:
 	cli
 1:	hlt
 	jmp 1b
-.size _start, . - _start
+#.size _start, . - _start
