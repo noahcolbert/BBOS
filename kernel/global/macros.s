@@ -1,7 +1,8 @@
-# Some macros
+#include "kernel/global/definitions.s"
 
-# Definitions
-%include "kernel/global/definitions.s"
-
-# Removes offset from 'a'
-%define no_offset(a) a-offset
+/* NASM:
+ *   %define no_offset(a) a-offset
+ *
+ * GAS + CPP (for .S files):
+ */
+#define no_offset(a) ((a) - offset)

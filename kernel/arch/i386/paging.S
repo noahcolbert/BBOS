@@ -1,122 +1,130 @@
-%include "kernel/global/macros.s"
+    .include "kernel/global/definitions.s"
 
-section .text
-global initialize_paging
-global enable_paging
+    .section .text
+    .globl initialize_paging
+    .globl enable_paging
 
 initialize_paging:
-
     # First PML4 entry
-    mov eax, no_offset(pdpt_low)
-    or eax, 0b11
-    mov [no_offset(pml4)], eax
+    movl    $pdpt_low - offset, %eax
+    orl     $3, %eax                        # 0b11
+    movl    %eax, pml4 - offset
 
     # 511th PML4 entry
-    mov eax, no_offset(pdpt_high)
-    or eax, 0b11
-    mov [no_offset(pml4) + 511 * 8], eax
+    movl    $pdpt_high - offset, %eax
+    orl     $3, %eax
+    movl    %eax, pml4 - offset + 511*8
 
-    # Higher half pdpt
-    mov eax, no_offset(pd)
-    or eax, 0b11
-    mov [no_offset(pdpt_high) + 510 * 8], eax
+    # Higher half PDPT
+    movl    $pd - offset, %eax
+    orl     $3, %eax
+    movl    %eax, pdpt_high - offset + 510*8
 
-    # Lower half pdpt
-    mov eax, no_offset(pd)
-    or eax, 0b11
-    mov [no_offset(pdpt_low) + 0 * 8], eax
+    # Lower half PDPT
+    movl    $pd - offset, %eax
+    orl     $3, %eax
+    movl    %eax, pdpt_low - offset + 0*8
 
     # Map page tables
-    mov eax, no_offset(pts)
-    mov ebx, 0b11
-    mov ecx, 512*512
-    mov edx, 0
-    call map_pts
+    movl    $pts - offset, %eax             # eax: addr of tables
+    movl    $3, %ebx                        # ebx: flags (0b11)
+    movl    $512*512, %ecx                  # ecx: num of tables
+    xorl    %edx, %edx                      # edx: offset addr = 0
+    call    map_pts
 
     # Map the page directory 
-    mov eax, no_offset(pd)
-    mov ebx, 0b11
-    mov ecx, 512
-    mov edx, no_offset(pts)
-    call map_pd
+    movl    $pd - offset, %eax              # eax: addr of page dir
+    movl    $3, %ebx                        # ebx: flags
+    movl    $512, %ecx                      # ecx: num of entries
+    movl    $pts - offset, %edx             # edx: location of page tables
+    call    map_pd
 
     # Load the PML4
-    mov eax, no_offset(pml4)
-    mov cr3, eax
+    movl    $pml4 - offset, %eax
+    movl    %eax, %cr3
 
-    # Enable PAE 
-    mov eax, cr4
-    or eax, 1 << 5
-    mov cr4, eax
+    # Enable PAE (set CR4.PAE bit 5)
+    movl    %cr4, %eax
+    orl     $(1 << 5), %eax
+    movl    %eax, %cr4
 
     ret
 
 
 enable_paging:
-    mov eax, cr0
-    or eax, 1 << 31
-    mov cr0, eax
-
+    # Enable paging (set CR0.PG bit 31)
+    movl    %cr0, %eax
+    orl     $(1 << 31), %eax
+    movl    %eax, %cr0
     ret
 
+
+# map_pts:
+#   eax: addr of tables
+#   ebx: flags
+#   ecx: num of tables
+#   edx: offset addr
 map_pts:
-    # eax: addr of tables | ebx: flags 
-    # ecx: num of tables | edx: offset addr 
+    # Clear non-flag bits
+    andl    $0xFFF, %ebx
+    # Apply flags to starting offset
+    orl     %ebx, %edx
 
-    # Clear non flags 
-    and ebx, 0xFFF
-    # Apply flags 
-    or edx, ebx
-
-.map1:
-
+map_pts_loop:
     # Move addr into table
-    mov [eax], edx
+    movl    %edx, (%eax)
 
-    # Add 4096 to offset
-    add edx, 4096
+    # Add 4096 to offset (next page)
+    addl    $4096, %edx
 
-    # Move to the next table
-    add eax, 8
+    # Move to the next table entry (8-byte entries)
+    addl    $8, %eax
 
     # Decrement and loop if ecx > 0
-    dec ecx
-    cmp ecx, 0
-    jg .map1 
+    decl    %ecx
+    cmpl    $0, %ecx
+    jg      map_pts_loop
 
     ret
 
+
+# map_pd:
+#   eax: addr of page dir
+#   ebx: flags
+#   ecx: num of entries
+#   edx: location of page tables
 map_pd:
-    # eax: addr of page dir | ebx: flags 
-    # ecx: num of entries | edx: location of page tables
+    andl    $0xFFF, %ebx
+    orl     %ebx, %edx
 
-    and ebx, 0xFFF
-    or edx, ebx
-
-.map1:
+map_pd_loop:
     # Move addr into the table
-    mov [eax], edx
-    add edx, 4096
-    add eax, 8
-    dec ecx
-    jnz .map1
+    movl    %edx, (%eax)
+
+    # Next page / entry
+    addl    $4096, %edx
+    addl    $8, %eax
+
+    decl    %ecx
+    jnz     map_pd_loop
 
     ret
 
-section .bss 
-align 4096
+
+    .section .bss
+    .align 4096
 
 pml4:
-    resb 4096
+    .space 4096
 
 pdpt_low:
-    resb 4096
+    .space 4096
 
 pdpt_high:
-    resb 4096
+    .space 4096
 
 pd:
-    resb 4096
+    .space 4096
 
 pts:
-    resb 4096 * 512
+    .space 4096 * 512
