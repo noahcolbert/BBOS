@@ -23,7 +23,7 @@ stack_top:
 
 
 # The kernel entry point.
-#.section .multiboot.text, "a"
+.section .multiboot.text, "a"
 .global _start
 .type _start, @function
 _start:
