@@ -13,7 +13,6 @@ SECTIONS
 	/* Kernel lives at 3GB + 1MB in virtual addr space
 		which is 1MB in phys addr space */
 
-	_kernel_start = .;
 	.multiboot.data : {
 		*(.multiboot.data)
 	}
@@ -22,12 +21,12 @@ SECTIONS
 		*(.multiboot.text)
 	}
 
-	/* 0x00100000 + 0xBFF00000 = 0xC0000000 */
-	. += 0xBFF00000;
+	. += 0xC0000000;
 
 	/* First put the multiboot header, as it is required to be put very early
 	   early in the image or the bootloader won't recognize the file format.
 	   Next we'll put the .text section. */
+	_kernel_start = .;
 	.text ALIGN(4K) : AT (ADDR (.text) - 0xC0000000)
 	{
         text_start = .;
